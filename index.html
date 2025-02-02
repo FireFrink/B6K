@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial; background: transparent; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; }
+    </style>
+</head>
+<body>
+    <table id="ranking"></table>
+
+    <script>
+        const SHEET_URL = https://docs.google.com/spreadsheets/d/1cCzvK4Bxb9CkYdS9rfduc0KdB3gsO6AScX5FEGVOcsI/edit?usp=sharing;
+
+        function updateRanking() {
+            fetch(SHEET_URL)
+                .then(res => res.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const html = parser.parseFromString(data, "text/html");
+                    const rows = html.querySelectorAll("table tr");
+                    let tableHTML = "";
+                    
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll("td");
+                        if (cells.length > 0) {
+                            tableHTML += `<tr>
+                                <td>${cells[0].textContent}</td>
+                                <td>${cells[1].textContent}</td>
+                            </tr>`;
+                        }
+                    });
+
+                    document.getElementById("ranking").innerHTML = tableHTML;
+                });
+        }
+
+        // Alle 5 Sekunden aktualisieren
+        setInterval(updateRanking, 5000);
+        updateRanking(); // Initial laden
+    </script>
+</body>
+</html>
